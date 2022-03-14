@@ -10,7 +10,6 @@ app.get('/', async (req, res)=> {
 });
 
 app.post('/cadastrar', async (req, res)=> {
-    console.log(req.body)
 
     await User.create(req.body)
     .then(() => {
@@ -24,7 +23,6 @@ app.post('/cadastrar', async (req, res)=> {
 })
 
 app.post('/notes', async (req, res)=> {
-    console.log(req.body)
 
     await Note.create(req.body)
     .then(() => {
@@ -45,6 +43,21 @@ app.get("/buscarNote", async (req, res) => {
             erro: false,
             nota
         });
+    }).catch(() => {
+      return res.status(400).json({
+          erro: true,
+          mensagem: "Erro: Nenhum produto encontrado!"
+      });
+    });
+  });
+
+  app.get("/listar-notas", async (req, res) => {
+    await Note.findAll()
+    .then((notas) => {
+      return res.json({
+          erro: false,
+          notas
+      });
     }).catch(() => {
       return res.status(400).json({
           erro: true,
