@@ -5,6 +5,10 @@ const Note = require('./src/models/Note')
 
 app.use(express.json());
 
+const cors = require('cors'); //Biblioteca pois estava dando erro no axios, o navegador reclamava
+
+app.use(cors())
+
 app.get('/', async (req, res)=> {
     res.send("pagina inicial");
 });
