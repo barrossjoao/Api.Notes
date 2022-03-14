@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const User = require('./models/user');
-const Note = require('./models/Note')
+const User = require('./src/models/user');
+const Note = require('./src/models/Note')
 
 app.use(express.json());
 
