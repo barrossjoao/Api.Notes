@@ -44,7 +44,6 @@ app.get("/buscarNote", async (req, res) => {
     await Note.findByPk(id)
     .then((nota) => {
         return res.json({
-            erro: false,
             nota
         });
     }).catch(() => {
@@ -59,7 +58,6 @@ app.get("/buscarNote", async (req, res) => {
     await Note.findAll()
     .then((notas) => {
       return res.json({
-          erro: false,
           notas
       });
     }).catch(() => {
@@ -75,7 +73,6 @@ app.get("/buscarNote", async (req, res) => {
     await Note.update(req.body, {where: {id}})
     .then(() => {
       return res.json({
-          erro: false,
           mensagem: "Produto editado com sucesso!"
       });
     }).catch(() => {
@@ -91,7 +88,6 @@ app.get("/buscarNote", async (req, res) => {
     await Note.destroy({where: {id}})
     .then(() => {
       return res.json({
-          erro: false,
           mensagem: "Produto apagado com sucesso!"
       });
     }).catch(() => {
