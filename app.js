@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const User = require('./src/models/user');
-const Note = require('./src/models/Note')
+const Note = require('./src/models/Note');
 
 app.use(express.json());
 
@@ -10,18 +10,59 @@ const cors = require('cors'); //Biblioteca pois estava dando erro no axios, o na
 app.use(cors())
 
 app.get('/', async (req, res)=> {
-    res.send("pagina inicial");
+    res.send("Redirecionamento Incorreto. Verifique!");
 });
 
-app.post('/cadastrar', async (req, res)=> {
-
+app.post('/new-cadastro', async (req, res)=> {
     await User.create(req.body)
+    .then(()=>{
+        return res.status(200).json(req.body);
+    }).catch(()=>{
+        return res.status(400).json({
+          error: true,
+          mensagem: "Erro: Cadastro não realizado"
+        });
+    });
+});
+
+app.get('/cadastros', async (req, res)=> {
+    await User.findAll()
+    .then((user) => {
+        return res.json({
+            user
+      });
+    }).catch(() => {
+        return res.status(400).json({
+          error: true,
+          mensagem: "Erro: Cadastro não realizado"
+        });
+    });
+})
+
+app.get('/buscar-cadastro-id', async (req, res)=> {
+    const { id } = req.body;
+    await User.findByPk(id)
+    .then((user) => {
+        return res.json({
+            user
+      });
+    }).catch(() => {
+        return res.status(400).json({
+          error: true,
+          mensagem: "Erro: Cadastro não realizado"
+        });
+    });
+});
+  
+app.put('/editar-cadastro', async (req, res)=> {
+    const {id} = req.body;
+    await User.update(req.body, {where: {id}})
     .then(() => {
         return res.status(200).json(req.body);
     }).catch(() => {
         return res.status(400).json({
             erro: true,
-            mensagem:"Erro: Usuario não cadastradado com sucesso"
+            mensagem:"Erro: Usuario não editado com sucesso"
         });
     });
 })
@@ -37,7 +78,7 @@ app.post('/notes', async (req, res)=> {
             mensagem:"Erro: Usuario não cadastradado com sucesso"
         });
     });
-})
+});
 
 app.get("/buscarNote", async (req, res) => {
     const { id } = req.body;
@@ -100,4 +141,4 @@ app.get("/buscarNote", async (req, res) => {
 
 app.listen(8080, () => {
     console.log("Servidor Iniciado na porta 8080: http://localhost:8080")
-})
+});
