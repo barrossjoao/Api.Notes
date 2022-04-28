@@ -2,10 +2,12 @@ const express = require('express');
 const app = express();
 const User = require('./src/models/user');
 const Note = require('./src/models/Note');
+const { cpf } = require('cpf-cnpj-validator');
 
 app.use(express.json());
 
 const cors = require('cors'); //Biblioteca pois estava dando erro no axios, o navegador reclamava
+
 
 app.use(cors())
 
@@ -14,15 +16,22 @@ app.get('/', async (req, res)=> {
 });
 
 app.post('/new-cadastro', async (req, res)=> {
-    await User.create(req.body)
-    .then(()=>{
-        return res.status(200).json(req.body);
-    }).catch(()=>{
-        return res.status(400).json({
-          error: true,
-          mensagem: "Erro: Cadastro não realizado"
-        });
-    });
+    if (cpf.isValid(req.body.cpf)) {
+      await User.create(req.body)
+      .then(()=>{
+          return res.status(200).json(req.body);
+      }).catch(()=>{
+          return res.status(400).json({
+            error: true,
+            mensagem: "Erro: Cadastro não realizado"
+          });
+      });
+    } else {
+      return res.status(400).json({
+        error: true,
+        mensagem: "Erro: CPF Inválido"
+      });
+    }
 });
 
 app.get('/cadastros', async (req, res)=> {
