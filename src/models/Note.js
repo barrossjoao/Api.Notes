@@ -11,10 +11,17 @@ const Note = db.define('note',{
     title: {
         type: Sequelize.STRING, 
         allowNull: false,
+        validate:{
+            notEmpty: true,
+            len: [0, 20]
+        }
     },
     content: {
         type: Sequelize.STRING, 
         allowNull: false,
+        validate:{
+            notEmpty: true,
+        }
     }
 });
 
