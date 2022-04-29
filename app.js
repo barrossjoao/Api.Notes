@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const User = require('./src/models/user');
@@ -198,6 +199,6 @@ app.get("/buscarNote", async (req, res) => {
     });
   });
 
-app.listen(8080, () => {
-    console.log("Servidor Iniciado na porta 8080: http://localhost:8080")
+app.listen(process.env.DATABASE_PORT, () => {
+    console.log(`Servidor rodando na porta ${process.env.DATABASE_PORT}`);
 });
