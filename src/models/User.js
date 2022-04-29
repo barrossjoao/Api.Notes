@@ -43,7 +43,6 @@ const User = db.define('users', {
         allowNull: false,
         validate:{
             notEmpty: true,
-            len: [6, 20]
         }
     },
 });
