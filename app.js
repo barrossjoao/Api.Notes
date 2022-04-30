@@ -7,6 +7,8 @@ const { cpf } = require('cpf-cnpj-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { eAdmin } = require('./middleware/auth');
+
 app.use(express.json());
 
 const cors = require('cors'); //Biblioteca pois estava dando erro no axios, o navegador reclamava
@@ -14,7 +16,7 @@ const cors = require('cors'); //Biblioteca pois estava dando erro no axios, o na
 
 app.use(cors())
 
-app.get('/', async (req, res)=> {
+app.get('/', eAdmin, async (req, res)=> {
     res.send("Redirecionamento Incorreto. Verifique!");
 });
 
@@ -25,7 +27,7 @@ app.post('/login', async (req, res)=> {
         email: req.body.email
       }
     });
-
+    
     if (user === null) {
       return res.status(401).send({ 
         error: 'Usuario não encontrado. Verifique os valores.' 
@@ -38,16 +40,20 @@ app.post('/login', async (req, res)=> {
       });
     }
 
-    var token = jwt.sign({ id: user.id }, 'secret', {
+    var token = jwt.sign({ id: user.id }, process.env.SECRET, {
       expiresIn: 86400 // expires in 24 hours
     });
 
-    res.status(200).send({ auth: true, token: token });
+    res.status(200).send({ 
+      erro: false,
+      mensagem: 'Login realizado com sucesso!',
+      token
+     });
 
 });
 
 
-app.post('/new-cadastro', async (req, res)=> {
+app.post('/new-cadastro', eAdmin, async (req, res)=> {
     if (cpf.isValid(req.body.cpf)){
       var dados = req.body;
       dados.password = await bcrypt.hash(dados.password, 10);
@@ -70,7 +76,7 @@ app.post('/new-cadastro', async (req, res)=> {
     }
 });
 
-app.get('/cadastros', async (req, res)=> {
+app.get('/cadastros', eAdmin, async (req, res)=> {
     await User.findAll()
     .then((user) => {
         return res.json({
@@ -84,7 +90,7 @@ app.get('/cadastros', async (req, res)=> {
     });
 })
 
-app.get('/buscar-cadastro-id', async (req, res)=> {
+app.get('/buscar-cadastro-id', eAdmin, async (req, res)=> {
     const { id } = req.body;
     await User.findByPk(id)
     .then((user) => {
@@ -99,7 +105,7 @@ app.get('/buscar-cadastro-id', async (req, res)=> {
     });
 });
   
-app.put('/editar-cadastro', async (req, res)=> {
+app.put('/editar-cadastro', eAdmin, async (req, res)=> {
     const {id} = req.body;
     await User.update(req.body, {where: {id}})
     .then(() => {
@@ -112,7 +118,7 @@ app.put('/editar-cadastro', async (req, res)=> {
     });
 })
 
-app.delete('/delete-user', async (req, res) => {
+app.delete('/delete-user', eAdmin,  async (req, res) => {
     const {id} = req.body;
     await User.destroy({where: {id}})
     .then(() => {
@@ -127,7 +133,7 @@ app.delete('/delete-user', async (req, res) => {
     });
 });
 
-app.post('/notes', async (req, res)=> {
+app.post('/notes', eAdmin, async (req, res)=> {
 
     await Note.create(req.body)
     .then(() => {
@@ -140,7 +146,7 @@ app.post('/notes', async (req, res)=> {
     });
 });
 
-app.get("/buscarNote", async (req, res) => {
+app.get("/buscarNote", eAdmin, async (req, res) => {
     const { id } = req.body;
     await Note.findByPk(id)
     .then((nota) => {
@@ -155,7 +161,7 @@ app.get("/buscarNote", async (req, res) => {
     });
   });
 
-  app.get("/listar-notas", async (req, res) => {
+  app.get("/listar-notas", eAdmin, async (req, res) => {
     await Note.findAll()
     .then((notas) => {
       return res.json({
@@ -169,7 +175,7 @@ app.get("/buscarNote", async (req, res) => {
     });
   });
 
-  app.put('/edit-note', async (req, res) => {
+  app.put('/edit-note', eAdmin, async (req, res) => {
     const {id} = req.body;
     await Note.update(req.body, {where: {id}})
     .then(() => {
@@ -184,7 +190,7 @@ app.get("/buscarNote", async (req, res) => {
     });
   });
 
-  app.delete('/delete-note', async (req, res) => {
+  app.delete('/delete-note', eAdmin, async (req, res) => {
     const {id} = req.body;
     await Note.destroy({where: {id}})
     .then(() => {
