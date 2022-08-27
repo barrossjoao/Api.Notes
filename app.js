@@ -176,6 +176,29 @@ app.get("/listar-notas", eAdmin, async (req, res) => {
     });
 });
 
+
+app.get("/listar-notas-", async (req, res) => {
+  const { userId } = req.body;
+  await Note.findAll({
+    where: {
+      userId: userId
+    },
+    order: [
+      ['id', 'DESC']
+    ]
+  }).then((notas) => {
+      return res.json({
+        notas
+      });
+    }).catch((err) => {
+      console.log(err);
+      return res.status(400).json({
+        erro: true,
+        mensagem: `Erro: Nenhuma nota com o UserId: ${userId} encontrado!`
+      });
+    });
+});
+
 app.put('/edit-note', eAdmin, async (req, res) => {
   const { id } = req.body;
   await Note.update(req.body, { where: { id } })
