@@ -22,11 +22,6 @@ const User = db.define('users', {
   },
   age: {
     type: Sequelize.INTEGER,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      isInt: true
-    }
   },
   cpf: {
     type: Sequelize.STRING,

@@ -22,7 +22,7 @@ app.get('/', eAdmin, async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const user = await User.findOne({
-    attributes: ['id', 'name', 'email', 'password'],
+    attributes: ['email', 'password'],
     where: {
       email: req.body.email
     }
