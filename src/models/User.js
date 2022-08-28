@@ -17,7 +17,6 @@ const User = db.define('users', {
   },
   role: {
     type: Sequelize.ENUM('admin', 'user'),
-    allowNull: false,
     defaultValue: 'user',
   },
   age: {

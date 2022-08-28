@@ -22,33 +22,43 @@ app.get('/', eAdmin, async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const user = await User.findOne({
-    attributes: ['id', 'name', 'email', 'password'],
+    attributes: ['id', 'name', 'role', 'email', 'password',],
     where: {
       email: req.body.email
     }
   });
 
-  if (user === null) {
-    return res.status(401).send({
-      error: 'Usuario não encontrado. Verifique os valores.'
+  try {
+    if (user === null) {
+      return res.status(401).send({
+        error: 'Usuario não encontrado. Verifique os valores.'
+      });
+    }
+
+    if (!(await bcrypt.compare(req.body.password, user.password))) {
+      return res.status(401).send({
+        error: 'Senha incorreta. Verifique os valores.'
+      });
+    }
+
+    var token = jwt.sign({ id: user.id }, process.env.SECRET, {
+      expiresIn: 86400 // expires in 24 hours
     });
-  }
 
-  if (!(await bcrypt.compare(req.body.password, user.password))) {
-    return res.status(401).send({
-      error: 'Senha incorreta. Verifique os valores.'
+    res.status(200).send({
+      erro: false,
+      mensagem: 'Login realizado com sucesso!',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+      }
     });
+
+  } catch (err) {
+    console.log(err)
   }
-
-  var token = jwt.sign({ id: user.id }, process.env.SECRET, {
-    expiresIn: 86400 // expires in 24 hours
-  });
-
-  res.status(200).send({
-    erro: false,
-    mensagem: 'Login realizado com sucesso!',
-    token
-  });
 
 });
 
