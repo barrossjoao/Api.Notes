@@ -1,11 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const User = require('./src/models/user');
+const User = require('./src/models/User');
 const Note = require('./src/models/Note');
-const { cpf } = require('cpf-cnpj-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validarCPF = require('./src/utils/functions');
 
 const { eAdmin } = require('./middleware/auth');
 
@@ -63,10 +63,12 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.post('/new-cadastro', eAdmin, async (req, res) => {
-  if (cpf.isValid(req.body.cpf)) {
-    var dados = req.body;
-    dados.password = await bcrypt.hash(dados.password, 10);
+app.post('/new-cadastro', async (req, res) => {
+  const dados = req.body;
+  const { cpf, password } = req.body;
+  console.log(cpf)
+  if (validarCPF(cpf)) {
+    password = await bcrypt.hash(password, 10);
     await User.create(dados)
       .then(() => {
         return res.status(201).json({
