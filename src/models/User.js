@@ -45,10 +45,4 @@ const User = db.define('users', {
     }
   },
 });
-
-//Criar a tabela
-User.sync()
-//Verifica se a tabela ja existe, e se sim, so a altera.
-User.sync({ alter: true })
-
 module.exports = User;

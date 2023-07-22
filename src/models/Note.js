@@ -26,9 +26,4 @@ const Note = db.define('note', {
   }
 });
 
-//Criar a tabela e não faz nada se ela ja existir.
-Note.sync()
-//Verifica se a tabela ja existe, e se sim, so a altera.
-Note.sync({ alter: true })
-
 module.exports = Note;
