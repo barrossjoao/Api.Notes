@@ -66,7 +66,6 @@ app.post('/login', async (req, res) => {
 app.post('/new-cadastro', async (req, res) => {
   const dados = req.body;
   const { cpf, password } = req.body;
-  console.log(cpf)
   if (validarCPF(cpf)) {
     password = await bcrypt.hash(password, 10);
     await User.create(dados)
