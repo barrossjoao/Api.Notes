@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run db:migrate && npm run db:seed && nodemon app.js",
+    "start": "nodemon app.js",
     "db:migrate": "sequelize db:migrate",
     "db:seed": "sequelize db:seed:all"
   },
