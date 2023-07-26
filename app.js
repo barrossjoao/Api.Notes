@@ -6,6 +6,7 @@ const Note = require('./src/models/Note');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validarCPF = require('./src/utils/functions');
+const { Op } = require("sequelize");
 
 const { eAdmin } = require('./middleware/auth');
 
@@ -65,9 +66,9 @@ app.post('/login', async (req, res) => {
 
 app.post('/new-cadastro', async (req, res) => {
   const dados = req.body;
-  const { cpf, password } = req.body;
+  const { cpf } = req.body;
   if (validarCPF(cpf)) {
-    password = await bcrypt.hash(password, 10);
+    dados.password = await bcrypt.hash(dados.password, 10);
     await User.create(dados)
       .then(() => {
         return res.status(201).json({
@@ -208,6 +209,27 @@ app.get("/listar-notas-", async (req, res) => {
         mensagem: `Erro: Nenhuma nota com o UserId: ${userId} encontrado!`
       });
     });
+});
+
+
+app.get('/listar-notas--', async (req, res) => {
+  const { titulo } = req.query;
+
+  try {
+    const notas = await Note.findAll({
+      where: {
+        title: {
+          [Op.like]: `%${titulo}%`
+        }
+      }
+    });
+    console.log(notas, 'notas')
+    res.json({
+      notas
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar notas.' });
+  }
 });
 
 app.put('/edit-note', eAdmin, async (req, res) => {
